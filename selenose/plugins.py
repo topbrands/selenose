@@ -93,7 +93,7 @@ class SeleniumDriverPlugin(plugins.Plugin):
         # Check if this is a SELENIUM test
         if self.eligible(test):
             # If it is, inject a driver
-            test.context.driver = self.env.create()
+            test.context.driver_env = self.env
 
     def stopTest(self, test):
         '''
@@ -101,11 +101,4 @@ class SeleniumDriverPlugin(plugins.Plugin):
         '''
         # Check if was a SELENIUM test
         if self.eligible(test):
-            # If quit already called in test, produces a URLError, so catch it
-            try:
-                # Quit
-                test.context.driver.quit()
-            # Ignore error if quit already
-            except URLError: pass
-            # Reset
-            test.context.driver = None
+            test.context.driver_env = None
