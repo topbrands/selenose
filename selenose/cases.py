@@ -8,6 +8,21 @@ class SeleniumTestCase(unittest.TestCase):
     # Flag to notify that it is a SELENIUM test
     enable_selenium_driver = True
 
+    def setUp(self):
+        super(SeleniumTestCase, self).setUp()
+        self.driver = self.driver_env.create() #create driver from injected environment
+
+    def tearDown(self):
+        super(SeleniumTestCase, self).tearDown()
+        # If quit already called in test, produces a URLError, so catch it
+        try:
+            # Quit
+            self.driver.quit()
+        # Ignore error if quit already
+        except URLError:
+            pass
+
+
 try:
     import django.test
 except ImportError, e: pass
