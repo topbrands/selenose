@@ -3,7 +3,24 @@ import unittest
 from plugins import GlobalDriverEnv
 
 
-class SeleniumTestCase(unittest.TestCase):
+
+class SeleniumTestCase_WithDriverEveryTime(unittest.TestCase):
+    '''
+    SELENIUM test case.
+    '''
+    def setUp(self):
+        self.driver = GlobalDriverEnv().get_driver()
+
+    def tearDown(self):
+        # If quit already called in test, produces a URLError, so catch it
+        try:
+            # Quit
+            self.driver.quit()
+        # Ignore error if quit already
+        except URLError:
+            pass
+
+class SeleniumTestCase_WithDriverOnce(unittest.TestCase):
     '''
     SELENIUM test case.
     '''
