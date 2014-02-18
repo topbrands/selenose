@@ -9,6 +9,17 @@ from nose import plugins, config
 from selenose.server import Server
 from selenose.configs import ServerConfig, DriverConfig
 
+class GlobalDriverEnv(object):
+    environment = None
+
+    @classmethod
+    def set_env(cls, env):
+        cls.environment = env
+
+    def get_driver(self):
+        return self.environment.create()
+
+
 def all_config_files(options, conf):
     '''
     Get the list of configuration files.
@@ -77,28 +88,4 @@ class SeleniumDriverPlugin(plugins.Plugin):
                 # Not provided, raise
                 raise ValueError('please provide a driver environment')
             # Get the environment
-            self.env = DriverConfig(all_config_files(options, conf)).getenv(options.env)
-
-    def eligible(self, test):
-        '''
-        Check if this is a SELENIUM test.
-        '''
-        # Check if this test has a context and that the flag is available
-        return hasattr(test, 'context') and getattr(test.context, 'enable_selenium_driver', False)
-
-    def startTest(self, test):
-        '''
-        Before test starts, create a driver.
-        '''
-        # Check if this is a SELENIUM test
-        if self.eligible(test):
-            # If it is, inject a driver
-            test.context.driver_env = self.env
-
-    def stopTest(self, test):
-        '''
-        After test, cleanup.
-        '''
-        # Check if was a SELENIUM test
-        if self.eligible(test):
-            test.context.driver_env = None
+            GlobalDriverEnv.set_env(DriverConfig(all_config_files(options, conf)).getenv(options.env))
